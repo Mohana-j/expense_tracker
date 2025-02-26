@@ -1,141 +1,81 @@
-import React, { useState, useEffect } from "react";
-import { useUserStore } from "../context/userStore";
-import axios from "axios";
-import { Bar, Pie } from "react-chartjs-2";
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import "../styles/profile.css";
 
 const Profile = () => {
-  const { user, setUser } = useUserStore();
-  const [isEditing, setIsEditing] = useState(false);
-  const [editableUser, setEditableUser] = useState(null);
-  const [balance, setBalance] = useState(0);
-  const [chartData, setChartData] = useState(null);
+  const navigate = useNavigate();
+  const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchUserData = async () => {
-      try {
-        const token = localStorage.getItem("token");
-        if (!token) {
-          console.warn("No token found, user not logged in.");
-          return;
-        }
+      const token = localStorage.getItem("token"); // Ensure token is retrieved
+      if (!token) {
+        console.error("🚨 No token found!");
+        setLoading(false);
+        return;
+      }
 
-        const response = await axios.get("http://localhost:8000/api/register/profile", {
-          headers: { Authorization: `Bearer ${token}` },
+      try {
+        const response = await fetch("http://localhost:8000/api/register/profile", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
         });
 
-        if (response.status === 200) {
-          const userData = response.data;
-          setUser(userData);
-          setEditableUser(userData);
-          setBalance(userData.salary - userData.totalExpenses);
-
-          setChartData({
-            labels: ["Income", "Expenses"],
-            datasets: [
-              {
-                label: "Financial Overview",
-                data: [userData.salary, userData.totalExpenses],
-                backgroundColor: ["#28a745", "#dc3545"],
-              },
-            ],
-          });
-        } else {
-          console.error("Failed to fetch user data:", response.data);
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
         }
+
+        const data = await response.json();
+        console.log("✅ Fetched User Data:", data);
+        setUser(data);
       } catch (error) {
-        console.error("Error fetching user data:", error);
+        console.error("❌ Error fetching user:", error);
       } finally {
         setLoading(false);
       }
     };
 
     fetchUserData();
-  }, [setUser]);
+  }, []); // ✅ Runs only once on component mount
 
-  const handleEditToggle = () => {
-    setIsEditing(!isEditing);
-  };
-
-  const handleInputChange = (e) => {
-    setEditableUser({ ...editableUser, [e.target.name]: e.target.value });
-  };
-
-  const handleSave = async () => {
-    try {
-      const token = localStorage.getItem("token");
-      await axios.put("http://localhost:8000/api/register/update", editableUser, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-
-      setUser(editableUser);
-      setIsEditing(false);
-      alert("Profile updated successfully!");
-    } catch (error) {
-      console.error("Error updating profile:", error);
-      alert("Failed to update profile.");
-    }
-  };
-
-  if (loading) {
-    return <p className="loading-text">Loading profile...</p>;
-  }
-
-  if (!user) {
-    return <p className="error-text">Error loading profile. Please try again.</p>;
-  }
+  if (loading) return <p>Loading...</p>;
+  if (!user) return <p>No user data found.</p>;
 
   return (
     <div className="profile-container">
-      <div className="profile-header">
-        <h2>My Profile</h2>
-        <button onClick={handleEditToggle} className="edit-btn">
-          {isEditing ? "Cancel" : "Edit Profile"}
-        </button>
-      </div>
-
-      <div className="profile-content">
-        <div className="profile-info">
-          <img src="/images/user-avatar.png" alt="User Avatar" className="profile-avatar" />
-          {isEditing ? (
-            <input type="text" name="name" value={editableUser?.name} onChange={handleInputChange} />
-          ) : (
-            <h3>{user?.name || "N/A"}</h3>
-          )}
-          <p>Email: {user?.email || "N/A"}</p>
-          <p>Phone: {user?.phone || "N/A"}</p>
+      <div className="profile-card">
+        <div className="profile-header">
+          <img src="/default-avatar.png" alt="Profile" className="profile-avatar" />
+          <h2>{user.name}</h2>
+          <p className="profile-role">User</p>
         </div>
-
         <div className="profile-details">
-          <h3>Account Details</h3>
-          <div className="profile-item"><span>Username:</span> {user?.username || "N/A"}</div>
-          <div className="profile-item"><span>DOB:</span> {user?.dob || "N/A"}</div>
-          <div className="profile-item"><span>Gender:</span> {user?.gender || "N/A"}</div>
+          <p><strong>Email:</strong> {user.email}</p>
+          <p><strong>Phone:</strong> {user.phone}</p>
+          <p><strong>Date of Birth:</strong> {user.dob}</p>
+          <p><strong>Gender:</strong> {user.gender}</p>
+          <p><strong>Salary:</strong> ${user.salary || "N/A"}</p>
+          <p><strong>Total Expenses:</strong> ${user.totalExpenses || "N/A"}</p>
         </div>
-      </div>
 
-      <div className="finance-overview">
-        <h3>Financial Overview</h3>
-        <div className="finance-details">
-          <p><strong>Salary:</strong> ${user?.salary || "0.00"}</p>
-          <p><strong>Total Expenses:</strong> ${user?.totalExpenses || "0.00"}</p>
-          <p><strong>Balance:</strong> ${balance}</p>
-        </div>
-       
-        {chartData && (
-          <div className="charts">
-            <Pie data={chartData} />
-            <Bar data={chartData} />
-          </div>
-        )}
-      </div>
+        <p className="wallet-info">To see your income and transactions, visit your Wallet.</p>
+        <button className="wallet-button" onClick={() => navigate("/amount")}>Go to Wallet</button>
 
-      {isEditing && (
-        <button className="save-btn" onClick={handleSave}>
-          Save Changes
+        <button 
+          onClick={() => {
+            localStorage.removeItem("user");
+            localStorage.removeItem("token");
+            navigate("/login");
+          }} 
+          className="logout-button"
+        >
+          Logout
         </button>
-      )}
+      </div>
     </div>
   );
 };

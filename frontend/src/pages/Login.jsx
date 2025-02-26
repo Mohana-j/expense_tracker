@@ -1,45 +1,47 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
-import useAuthStore from "../context/authStore"; // ✅ Ensure correct import
-import "../styles/login.css"; // ✅ Ensure correct CSS path
+import "../styles/login.css";
 
 const Login = () => {
   const navigate = useNavigate();
-  const { setUser, setToken } = useAuthStore(); // ✅ Zustand store for authentication
-
-  // ✅ Controlled form state
-  const [email, setEmail] = useState(""); 
-  const [password, setPassword] = useState("");
+  const [loginData, setLoginData] = useState({
+    email: "",
+    password: "",
+  });
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  // ✅ Handle input changes
-  const handleEmailChange = (e) => setEmail(e.target.value);
-  const handlePasswordChange = (e) => setPassword(e.target.value);
-
-  const handleLogin = async (e) => {
-    e.preventDefault();
+  const handleChange = (e) => {
+    setLoginData({ ...loginData, [e.target.name]: e.target.value });
     setError("");
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
 
     try {
-      const response = await axios.post("http://localhost:8000/api/login", {
-        email,
-        password,
+      const response = await fetch("http://localhost:8000/api/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(loginData),
       });
 
-      console.log("Login Response:", response.data); // ✅ Debugging
+      const result = await response.json();
+      console.log("Login Response:", result);
 
-      if (response.data?.token && response.data?.user) {
-        setUser(response.data.user);
-        setToken(response.data.token);
-        localStorage.setItem("token", response.data.token); // ✅ Store token for persistence
-        navigate("/profile"); // ✅ Redirect to dashboard
+      if (response.ok) {
+        // Store the user details in localStorage properly
+        localStorage.setItem("user", JSON.stringify(result.user));
+        navigate("/profile"); // Redirect to Profile page
       } else {
-        setError("Invalid credentials. Please try again.");
+        setError(result.error || result.message || "Login failed.");
       }
-    } catch (err) {
-      console.error("Login Error:", err.response?.data || err.message);
-      setError(err.response?.data?.error || "Something went wrong. Try again.");
+    } catch (error) {
+      console.error("Login Error:", error);
+      setError("Something went wrong.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -47,38 +49,12 @@ const Login = () => {
     <div className="login-container">
       <div className="login-box">
         <h2>Login</h2>
-        <p className="subtext">Sign in to continue</p>
-        <form onSubmit={handleLogin}>
-          {error && <p className="error-message">{error}</p>}
-
-          <div className="input-group">
-            <input 
-              type="email" 
-              name="email" 
-              placeholder="Email" 
-              value={email} // ✅ Fixed 
-              onChange={handleEmailChange} // ✅ Fixed 
-              required
-            />
-            <input 
-              type="password" 
-              name="password" 
-              placeholder="Password" 
-              value={password} // ✅ Fixed 
-              onChange={handlePasswordChange} // ✅ Fixed 
-              required
-            />
-          </div>
-
-          <button type="submit" className="login-btn">Login</button>
+        {error && <div className="error-msg">{error}</div>}
+        <form onSubmit={handleSubmit}>
+          <input type="email" name="email" placeholder="Email" value={loginData.email} onChange={handleChange} required />
+          <input type="password" name="password" placeholder="Password" value={loginData.password} onChange={handleChange} required />
+          <button type="submit" disabled={loading}>{loading ? "Logging in..." : "Login"}</button>
         </form>
-
-        <p className="register-text">
-          Don't have an account?{" "}
-          <span className="register-link" onClick={() => navigate("/register")}>
-            Register
-          </span>
-        </p>
       </div>
     </div>
   );

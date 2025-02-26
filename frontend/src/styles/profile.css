@@ -1,36 +1,25 @@
 .profile-container {
-    max-width: 900px;
-    margin: auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #f5f7fa;
+  }
+  
+  .profile-card {
+    background: white;
     padding: 20px;
-    background: #ffffff;
-    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-    border-radius: 8px;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    width: 400px;
+    text-align: center;
   }
   
   .profile-header {
     display: flex;
-    justify-content: space-between;
+    flex-direction: column;
     align-items: center;
     margin-bottom: 20px;
-  }
-  
-  .edit-btn, .save-btn {
-    background: #007bff;
-    color: white;
-    padding: 8px 16px;
-    border: none;
-    cursor: pointer;
-    border-radius: 4px;
-  }
-  
-  .profile-content {
-    display: flex;
-    align-items: center;
-  }
-  
-  .profile-info {
-    flex: 1;
-    text-align: center;
   }
   
   .profile-avatar {
@@ -40,21 +29,14 @@
     margin-bottom: 10px;
   }
   
-  .profile-details {
-    flex: 2;
-    padding-left: 20px;
+  .profile-role {
+    color: #888;
+    font-size: 14px;
   }
   
-  .finance-overview {
-    margin-top: 20px;
-    padding: 20px;
-    background: #f8f9fa;
-    border-radius: 8px;
-  }
-  
-  .charts {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 20px;
+  .profile-details p {
+    font-size: 16px;
+    color: #333;
+    margin: 5px 0;
   }
   
