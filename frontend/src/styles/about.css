@@ -1,0 +1,209 @@
+/* Reset default styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* About Page Container */
+.about-container {
+    font-family: "Poppins", sans-serif;
+    color: #333;
+    background: #f8f9fa;
+    text-align: center;
+    padding-bottom: 50px;
+}
+
+/* About Header */
+.about-header {
+    background: linear-gradient(135deg, #002147 30%, #003366 100%);
+    color: #fff;
+    padding: 100px 20px;
+    text-align: center;
+    animation: fadeIn 1s ease-in-out;
+}
+
+.about-header h1 {
+    font-size: 40px;
+    font-weight: 700;
+    margin-bottom: 15px;
+    letter-spacing: 1px;
+}
+
+.about-header p {
+    font-size: 20px;
+    max-width: 700px;
+    margin: 0 auto;
+    opacity: 0.9;
+    line-height: 1.6;
+}
+
+/* Mission Section */
+.about-mission {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 60px;
+    padding: 100px 10%;
+    background: white;
+    animation: fadeInUp 1s ease-in-out;
+}
+
+.mission-content {
+    max-width: 500px;
+    text-align: left;
+}
+
+.mission-content h2 {
+    font-size: 32px;
+    color: #002147;
+    font-weight: 700;
+    margin-bottom: 15px;
+}
+
+.mission-content p {
+    font-size: 18px;
+    color: #555;
+    margin-top: 10px;
+    line-height: 1.6;
+}
+
+.mission-image img {
+    width: 100%;
+    max-width: 450px;
+    border-radius: 10px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+/* Features Section */
+.about-features {
+    padding: 100px 10%;
+    background: #f1f3f6;
+    animation: fadeInUp 1.2s ease-in-out;
+}
+
+.about-features h2 {
+    font-size: 32px;
+    color: #002147;
+    margin-bottom: 50px;
+    font-weight: 700;
+}
+
+.features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
+    gap: 40px;
+}
+
+.feature-card {
+    background: white;
+    padding: 35px;
+    border-radius: 12px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    text-align: center;
+}
+
+.feature-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+}
+
+.feature-icon {
+    font-size: 50px;
+    color: #ffa500;
+    margin-bottom: 15px;
+    transition: color 0.3s ease-in-out;
+}
+
+.feature-card:hover .feature-icon {
+    color: #ff8c00;
+}
+
+.feature-card h3 {
+    font-size: 22px;
+    margin-bottom: 12px;
+    font-weight: 600;
+}
+
+.feature-card p {
+    font-size: 16px;
+    color: #555;
+    line-height: 1.5;
+}
+
+/* Call to Action */
+.about-cta {
+    background: linear-gradient(135deg, #002147 30%, #003366 100%);
+    color: white;
+    padding: 100px 20px;
+    text-align: center;
+    animation: fadeInUp 1.3s ease-in-out;
+}
+
+.about-cta h2 {
+    font-size: 30px;
+    font-weight: 700;
+}
+
+.about-cta p {
+    font-size: 20px;
+    max-width: 600px;
+    margin: 15px auto;
+    line-height: 1.6;
+}
+
+.btn-primary {
+    background: #ffa500;
+    color: #002147;
+    padding: 14px 28px;
+    font-size: 18px;
+    font-weight: 600;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.3s ease, transform 0.2s ease;
+}
+
+.btn-primary:hover {
+    background: #ff8c00;
+    transform: translateY(-3px);
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .about-mission {
+        flex-direction: column;
+        text-align: center;
+        padding: 60px 5%;
+    }
+
+    .mission-content {
+        text-align: center;
+    }
+
+    .features-grid {
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    }
+}

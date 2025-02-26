@@ -1,0 +1,35 @@
+/* global.css - Global Styles */
+
+/* Global Reset */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Poppins', sans-serif;
+}
+
+/* Root Variables */
+:root {
+  --primary-color: #0052cc;
+  --secondary-color: #003c99;
+  --text-color: #333;
+  --background-color: #f4f6f8;
+  --card-bg: #fff;
+  --border-color: #ddd;
+  --shadow-light: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Body & Layout */
+body {
+  background-color: var(--background-color);
+  color: var(--text-color);
+  line-height: 1.6;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+main {
+  flex: 1;
+  padding: 20px;
+}

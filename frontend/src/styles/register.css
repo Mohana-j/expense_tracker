@@ -1,0 +1,145 @@
+/* Reset Defaults */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Arial", sans-serif;
+}
+
+/* Page Layout */
+.register-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background: linear-gradient(to right, #002147, #004080);
+}
+
+/* Card Design */
+.register-card {
+    background: #fff;
+    padding: 40px;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    text-align: center;
+    width: 400px;
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+/* Heading */
+.register-card h2 {
+    color: #002147;
+    margin-bottom: 10px;
+    font-size: 24px;
+}
+
+.register-card p {
+    color: #666;
+    font-size: 14px;
+}
+
+/* Input Fields */
+.input-group {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 15px;
+}
+
+.input-group input, select {
+    flex: 1;
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 14px;
+    color: #333; /* Ensure text is visible */
+    
+}
+
+/* Ensure placeholder text is visible */
+.input-group input::placeholder, 
+.input-group select::placeholder {
+    color: #888; /* Light gray for better visibility */
+}
+
+/* On focus, highlight the input */
+.input-group input:focus, 
+.input-group select:focus {
+    border-color: #002147; /* Highlight border */
+    outline: none;
+    box-shadow: 0 0 5px rgba(0, 33, 71, 0.5);
+}
+
+/* Button */
+.btn-primary {
+    width: 100%;
+    padding: 12px;
+    background: #ffa500;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.btn-primary:hover {
+    background: #e69500;
+}
+
+.btn-primary:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+}
+
+/* Error Message */
+.error-msg {
+    background: #ff4d4d;
+    color: white;
+    padding: 8px;
+    border-radius: 6px;
+    margin-bottom: 15px;
+}
+
+/* Login Link */
+.login-link {
+    margin-top: 15px;
+    font-size: 14px;
+}
+
+.login-link span {
+    color: #002147;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.login-link span:hover {
+    text-decoration: underline;
+}
+
+/* Success Popup */
+.popup {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.popup-content {
+    background: white;
+    padding: 30px;
+    border-radius: 12px;
+    text-align: center;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from { opacity: 0; transform: scale(0.9); }
+    to { opacity: 1; transform: scale(1); }
+}

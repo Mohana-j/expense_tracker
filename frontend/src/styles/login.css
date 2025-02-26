@@ -1,0 +1,163 @@
+/* ✅ Reset & Global Styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Inter", sans-serif;
+}
+
+/* ✅ Full-Screen Centering Fix */
+html, body {
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  
+}
+
+/* ✅ Prevent navbar/footer from overlapping */
+.navbar, .footer {
+  position: relative; /* Ensures they do not interfere */
+  z-index: 10;
+}
+
+/* ✅ Centered Login Container */
+.login-container {
+  width: 100%;
+  max-width: 420px;
+  padding: 40px;
+  background: linear-gradient(to right, #002147, #004080);
+  border-radius: 12px;
+  box-shadow: 0px 12px 30px rgba(0, 115, 230, 0.3);
+  text-align: center;
+  backdrop-filter: blur(10px); /* Frosted Glass Effect */
+  animation: fadeIn 0.8s ease-in-out;
+}
+
+/* ✅ Heading & Subtext */
+h2 {
+  color: #fff;
+  font-size: 26px;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.subtext {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.8);
+  margin-bottom: 20px;
+}
+
+/* ✅ Input Fields */
+.input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  margin-bottom: 18px;
+}
+
+.input-group input {
+  width: 100%;
+  padding: 12px;
+  font-size: 14px;
+  border: 2px solid rgba(255, 255, 255, 0.5);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  outline: none;
+  transition: 0.3s;
+}
+
+.input-group input::placeholder {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.input-group input:focus {
+  border-color: #00bfff;
+  box-shadow: 0px 0px 12px rgba(0, 191, 255, 0.6);
+  background: rgba(255, 255, 255, 0.3);
+}
+
+/* ✅ Error Message - White & Visible */
+.error-message {
+  color: #fff !important; /* Makes error text white */
+  font-size: 13px;
+  font-weight: 600;
+  background: rgba(255, 0, 0, 0.5); /* Semi-transparent red background */
+  padding: 8px;
+  border-radius: 5px;
+  margin-bottom: 12px;
+}
+
+/* ✅ Stylish Login Button */
+.login-btn {
+  width: 100%;
+  padding: 12px;
+  background: linear-gradient(90deg, #00bfff, #007acc);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+  box-shadow: 0px 5px 18px rgba(0, 191, 255, 0.4);
+}
+
+.login-btn:hover {
+  background: linear-gradient(90deg, #009acd, #0066cc);
+  box-shadow: 0px 6px 20px rgba(0, 154, 205, 0.5);
+  transform: translateY(-2px);
+}
+
+.login-btn:active {
+  transform: scale(0.97);
+}
+
+/* ✅ Register Text */
+.register-text {
+  margin-top: 15px;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.register-link {
+  color: #00bfff;
+  font-weight: 700;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.register-link:hover {
+  text-decoration: underline;
+  color: #009acd;
+}
+
+/* ✅ Smooth Fade-in Animation */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ✅ Mobile Responsive */
+@media (max-width: 500px) {
+  .login-container {
+    padding: 30px;
+    max-width: 350px;
+  }
+
+  .input-group input {
+    padding: 10px;
+    font-size: 13px;
+  }
+
+  .login-btn {
+    font-size: 15px;
+  }
+}

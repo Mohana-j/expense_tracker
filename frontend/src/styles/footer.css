@@ -1,0 +1,126 @@
+/* Reset default margin/padding */
+* {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* Ensure full height for the page */
+html, body {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    font-family: Arial, sans-serif;
+   
+}
+
+/* Root container to fill the page */
+#root {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+/* Ensure content pushes footer to the bottom */
+.app-container {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+}
+
+/* FOOTER STYLING */
+.footer {
+    background: #002147;
+    color: #fff;
+    padding: 60px 80px;
+    font-size: 16px;
+    width: 100%;
+    margin-top: auto; /* Ensures footer sticks at the bottom */
+}
+
+/* Footer Content Layout */
+.footer-container {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    max-width: 1200px;
+    margin: auto;
+    gap: 40px;
+}
+
+/* Footer Sections */
+.footer-section {
+    flex: 1;
+    min-width: 250px;
+}
+
+/* Section Titles */
+.footer-section h3 {
+    font-size: 22px;
+    margin-bottom: 15px;
+    color: #ffa500;
+}
+
+/* Footer Text */
+.footer-section p {
+    font-size: 16px;
+    color: #ccc;
+    line-height: 1.6;
+}
+
+/* Footer Links */
+.footer-section ul {
+    list-style: none;
+    padding: 0;
+}
+
+.footer-section ul li {
+    margin: 10px 0;
+}
+
+.footer-section ul li a {
+    color: #ffa500;
+    text-decoration: none;
+    font-size: 16px;
+    transition: color 0.3s ease;
+}
+
+.footer-section ul li a:hover {
+    color: white;
+    text-decoration: underline;
+}
+
+/* SOCIAL MEDIA */
+.social-media {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.footer-icons {
+    display: flex;
+    gap: 20px;
+    font-size: 24px;
+    justify-content: center;
+}
+
+.footer-icons a {
+    color: #ffa500;
+    transition: color 0.3s ease, transform 0.3s ease;
+}
+
+.footer-icons a:hover {
+    color: white;
+    transform: scale(1.1);
+}
+
+/* FOOTER BOTTOM SECTION */
+.footer-bottom {
+    text-align: center;
+    width: 100%;
+    margin-top: 50px;
+    font-size: 14px;
+    border-top: 1px solid #444;
+    padding-top: 20px;
+    color: #ccc;
+}
