@@ -13,140 +13,156 @@ app.use(cors());
 
 // ✅ Connect to MySQL Database
 const db = mysql.createConnection({
-  host: "localhost",
-  user: "root",
-  password: "Mona1025!", // Your MySQL password
-  database: "expense_tracker",
+    host: process.env.DB_HOST || "localhost",
+    user: process.env.DB_USER || "root",
+    password: process.env.DB_PASS || "Mona1025!", // Secure with .env
+    database: process.env.DB_NAME || "expense_tracker",
 });
 
 db.connect((err) => {
-  if (err) {
-    console.error("❌ Database Connection Failed:", err);
-  } else {
-    console.log("✅ Connected to MySQL Database");
-  }
+    if (err) {
+        console.error("❌ Database Connection Failed:", err);
+    } else {
+        console.log("✅ Connected to MySQL Database");
+    }
 });
 
-// ✅ Middleware to Verify Token
+// ✅ Middleware to verify JWT token
 const verifyToken = (req, res, next) => {
-  const authHeader = req.headers.authorization;
-  if (!authHeader) {
-    console.error("🚨 No authorization header!");
-    return res.status(401).json({ error: "Unauthorized - No token provided" });
-  }
+    const authHeader = req.headers.authorization;
+    if (!authHeader) return res.status(403).json({ error: "Access denied - No token provided" });
 
-  const token = authHeader.split(" ")[1];
-  if (!token) {
-    console.error("🚨 Token missing!");
-    return res.status(401).json({ error: "Unauthorized - Token missing" });
-  }
+    const token = authHeader.split(" ")[1];
+    if (!token) return res.status(403).json({ error: "Access denied - Invalid token format" });
 
-  try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.userId = decoded.id;
-    next();
-  } catch (error) {
-    console.error("🚨 Invalid Token:", error);
-    return res.status(401).json({ error: "Unauthorized - Invalid token" });
-  }
+    try {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        req.userId = decoded.id;
+        next();
+    } catch (error) {
+        return res.status(401).json({ error: "Unauthorized - Invalid token" });
+    }
 };
 
 // ✅ User Registration Route
 app.post("/api/register", async (req, res) => {
-  try {
-    const { fullName, email, username, password, phone, dob, gender } = req.body;
-    if (!fullName || !email || !username || !password || !phone || !dob || !gender) {
-      return res.status(400).json({ error: "All fields are required!" });
-    }
-
-    db.query("SELECT * FROM register WHERE email = ? OR username = ?", [email, username], async (err, results) => {
-      if (err) return res.status(500).json({ error: "Database error" });
-      if (results.length > 0) return res.status(400).json({ error: "User already exists" });
-
-      const hashedPassword = await bcrypt.hash(password, 10);
-      db.query(
-        "INSERT INTO register (name, email, username, password, phone, dob, gender) VALUES (?, ?, ?, ?, ?, ?, ?)",
-        [fullName, email, username, hashedPassword, phone, dob, gender],
-        (err, result) => {
-          if (err) return res.status(500).json({ error: "Error saving user" });
-          res.status(201).json({ message: "Registration successful!" });
+    try {
+        const { fullName, email, username, password, phone, dob, gender } = req.body;
+        if (!fullName || !email || !username || !password || !phone || !dob || !gender) {
+            return res.status(400).json({ error: "All fields are required!" });
         }
-      );
-    });
-  } catch (error) {
-    res.status(500).json({ error: "Something went wrong. Please try again." });
-  }
+
+        db.query("SELECT * FROM register WHERE email = ? OR username = ?", [email, username], async (err, results) => {
+            if (err) return res.status(500).json({ error: "Database error" });
+            if (results.length > 0) return res.status(400).json({ error: "User already exists" });
+
+            const hashedPassword = await bcrypt.hash(password, 10);
+            db.query(
+                "INSERT INTO register (name, email, username, password, phone, dob, gender) VALUES (?, ?, ?, ?, ?, ?, ?)",
+                [fullName, email, username, hashedPassword, phone, dob, gender],
+                (err) => {
+                    if (err) return res.status(500).json({ error: "Error saving user" });
+                    res.status(201).json({ message: "Registration successful!" });
+                }
+            );
+        });
+    } catch (error) {
+        res.status(500).json({ error: "Something went wrong. Please try again." });
+    }
 });
 
 // ✅ User Login Route
 app.post("/api/login", (req, res) => {
-  const { email, password } = req.body;
-  if (!email || !password) return res.status(400).json({ error: "All fields are required" });
+    const { email, password } = req.body;
+    if (!email || !password) return res.status(400).json({ error: "All fields are required" });
 
-  db.query("SELECT * FROM register WHERE email = ?", [email], async (err, results) => {
-    if (err) return res.status(500).json({ error: "Database error" });
-    if (results.length === 0) return res.status(400).json({ error: "Invalid email or password" });
+    db.query("SELECT * FROM register WHERE email = ?", [email], async (err, results) => {
+        if (err) return res.status(500).json({ error: "Database error" });
+        if (results.length === 0) return res.status(400).json({ error: "Invalid email or password" });
 
-    const user = results[0];
-    const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) return res.status(400).json({ error: "Invalid email or password" });
+        const user = results[0];
+        const isMatch = await bcrypt.compare(password, user.password);
+        if (!isMatch) return res.status(400).json({ error: "Invalid email or password" });
 
-    const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, { expiresIn: "1h" });
-    res.json({
-      message: "Login successful",
-      token,
-      user: { id: user.id, name: user.name, email: user.email },
+        const token = jwt.sign({ id: user.user_id }, process.env.JWT_SECRET, { expiresIn: "1h" });
+        res.json({
+            message: "Login successful",
+            token,
+            user: { id: user.user_id, name: user.name, email: user.email },
+        });
     });
-  });
 });
 
-// ✅ Profile Route (Fixes Unauthorized Issue)
-app.get("/api/register/profile", verifyToken, (req, res) => {
-  console.log("✅ User ID from Token:", req.userId);
-
-  db.query(
-    "SELECT id, name, email, username, phone, dob, gender, salary, totalExpenses FROM register WHERE id = ?",
-    [req.userId],
-    (err, results) => {
-      if (err) {
-        console.error("❌ Database Query Error:", err);
-        return res.status(500).json({ error: "Database error" });
-      }
-
-      if (results.length === 0) {
-        console.error("❌ User Not Found");
-        return res.status(404).json({ error: "User not found" });
-      }
-
-      console.log("✅ Sending User Data:", results[0]);
-      res.json(results[0]); // Send user data
+// ✅ Add Income Route
+app.post("/api/income", verifyToken, (req, res) => {
+    const { amount, source } = req.body;
+    if (!amount || !source) {
+        return res.status(400).json({ error: "Income amount and source are required!" });
     }
-  );
+
+    db.query(
+        "INSERT INTO income (user_id, amount, source) VALUES (?, ?, ?)",
+        [req.userId, amount, source],
+        (err, result) => {
+            if (err) return res.status(500).json({ error: "Database error" });
+            res.status(201).json({ message: "Income added successfully!" });
+        }
+    );
 });
 
-// ✅ Update Profile Route (Protected)
-app.put("/api/register/update", verifyToken, (req, res) => {
-  const { name, phone, dob, gender } = req.body;
-  db.query(
-    "UPDATE register SET name = ?, phone = ?, dob = ?, gender = ? WHERE id = ?",
-    [name, phone, dob, gender, req.userId],
-    (err, result) => {
-      if (err) return res.status(500).json({ error: "Failed to update profile" });
-      res.json({ message: "Profile updated successfully" });
+// ✅ Add Transaction Route & Update Balance
+app.post("/api/transaction", verifyToken, (req, res) => {
+    const { amount, category } = req.body;
+    if (!amount || !category) {
+        return res.status(400).json({ error: "Transaction amount and category are required!" });
     }
-  );
+
+    // Get the user's total income and total expenses
+    db.query("SELECT SUM(amount) AS total_income FROM income WHERE user_id = ?", [req.userId], (err, incomeResult) => {
+        if (err) return res.status(500).json({ error: "Database error" });
+
+        db.query("SELECT SUM(amount) AS total_expense FROM transaction WHERE user_id = ?", [req.userId], (err, expenseResult) => {
+            if (err) return res.status(500).json({ error: "Database error" });
+
+            const totalIncome = incomeResult[0].total_income || 0;
+            const totalExpense = expenseResult[0].total_expense || 0;
+            const newBalance = totalIncome - totalExpense - amount;
+
+            if (newBalance < 0) {
+                return res.status(400).json({ error: "Insufficient funds!" });
+            }
+
+            db.query(
+                "INSERT INTO transaction (user_id, amount, category) VALUES (?, ?, ?)",
+                [req.userId, amount, category],
+                (err, result) => {
+                    if (err) return res.status(500).json({ error: "Database error" });
+                    res.status(201).json({ message: "Transaction added successfully!" });
+                }
+            );
+        });
+    });
 });
 
-// ✅ Logout Route
-app.post("/api/logout", verifyToken, (req, res) => {
-  db.query(
-    "UPDATE login SET logout_time = CURRENT_TIMESTAMP WHERE user_id = ? ORDER BY login_time DESC LIMIT 1",
-    [req.userId],
-    (err, result) => {
-      if (err) return res.status(500).json({ error: "Failed to log out" });
-      res.json({ message: "Logout successful" });
-    }
-  );
+// ✅ Fetch User Data (Income, Transactions, Balance)
+app.get("/api/data", verifyToken, (req, res) => {
+    db.query("SELECT SUM(amount) AS income FROM income WHERE user_id = ?", [req.userId], (err, incomeResult) => {
+        if (err) return res.status(500).json({ error: "Database error" });
+
+        db.query("SELECT amount, category FROM transaction WHERE user_id = ?", [req.userId], (err, transactionResults) => {
+            if (err) return res.status(500).json({ error: "Database error" });
+
+            const totalIncome = incomeResult[0].income || 0;
+            const totalExpenses = transactionResults.reduce((total, item) => total + Number(item.amount || 0), 0);
+            const balance = totalIncome - totalExpenses;
+
+            res.json({
+                income: totalIncome,
+                transactions: transactionResults,
+                balance,
+            });
+        });
+    });
 });
 
 // ✅ Start Server

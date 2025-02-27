@@ -1,133 +1,138 @@
-/* Fullscreen Centered Background */
-.register-container {
+/* General Styling */
+body {
+    background: linear-gradient(to right, #6a11cb, #2575fc);
+    font-family: "Poppins", sans-serif;
     display: flex;
-    justify-content: center;
     align-items: center;
+    justify-content: center;
     height: 100vh;
-    background: linear-gradient(to right, #0073e6, #004c99);
-    padding: 20px;
+    margin: 0;
   }
   
-  /* Registration Box */
+  /* Centering the Register Box */
+  .register-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100vh; /* Ensure full height */
+  }
+  
+  /* Register Box */
   .register-box {
-    background: #ffffff;
-    padding: 2.5rem;
+    width: 100%;
+    max-width: 450px;
+    background: white;
+    padding: 35px;
     border-radius: 12px;
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
-    width: 450px;
+    box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.2);
     text-align: center;
-    transition: transform 0.2s ease-in-out;
-  }
-  
-  .register-box:hover {
-    transform: scale(1.02);
+    animation: fadeIn 0.8s ease-in-out;
   }
   
   /* Heading */
-  h2 {
-    font-size: 28px;
-    font-weight: 600;
+  .register-box h2 {
+    margin-bottom: 20px;
     color: #333;
-    margin-bottom: 1rem;
-  }
-  
-  /* Error Message */
-  .error-msg {
-    background: #ffdddd;
-    color: #d8000c;
-    padding: 12px;
-    border-radius: 6px;
-    margin-bottom: 1rem;
-    font-size: 14px;
-    font-weight: 500;
-  }
-  
-  /* Input Groups for Two Columns */
-  .input-group {
-    display: flex;
-    gap: 14px;
-    margin-bottom: 14px;
+    font-size: 24px;
+    font-weight: 600;
   }
   
   /* Input Fields */
   input,
   select {
     width: 100%;
-    padding: 14px;
-    border: 2px solid #ccc;
+    padding: 12px;
+    margin: 10px 0;
+    border: 1px solid #ddd;
     border-radius: 8px;
     font-size: 16px;
-    background: #f8f9fa;
-    transition: all 0.3s ease-in-out;
-    color: #333;
+    transition: 0.3s;
+    background: #f9f9f9;
   }
   
+  /* Input Focus Effect */
   input:focus,
   select:focus {
-    border-color: #0073e6;
+    border-color: #2575fc;
     outline: none;
-    background: #fff;
-    box-shadow: 0 0 8px rgba(0, 115, 230, 0.4);
+    box-shadow: 0 0 5px rgba(37, 117, 252, 0.5);
+    background: white;
   }
   
-  /* Placeholder Styling */
-  input::placeholder {
-    color: #666;
-    font-size: 14px;
-    opacity: 1;
-  }
-  
-  /* Date Picker Fix */
-  input[type="date"] {
-    color: #333;
-  }
-  
-  input[type="date"]::-webkit-calendar-picker-indicator {
-    filter: invert(0.5);
-  }
-  
-  /* Select Dropdown */
+  /* Select Styling */
   select {
-    background: #f8f9fa;
-    color: #333;
+    appearance: none;
+    cursor: pointer;
   }
   
-  /* Submit Button */
+  /* Error Message */
+  .error-msg {
+    color: red;
+    font-size: 14px;
+    margin-bottom: 10px;
+    background: rgba(255, 0, 0, 0.1);
+    padding: 8px;
+    border-radius: 5px;
+  }
+  
+  /* Register Button */
   button {
-    background: #0073e6;
+    width: 100%;
+    padding: 12px;
+    background: #2575fc;
     color: white;
+    font-size: 16px;
     border: none;
-    padding: 16px;
     border-radius: 8px;
     cursor: pointer;
-    font-size: 17px;
-    font-weight: 600;
-    letter-spacing: 0.5px;
-    transition: all 0.3s ease-in-out;
-    width: 100%;
+    transition: 0.3s;
     margin-top: 10px;
   }
   
   button:hover {
-    background: #005bb5;
-    transform: translateY(-2px);
+    background: #1b5fd6;
   }
   
   button:disabled {
-    background: #cccccc;
+    background: #ccc;
     cursor: not-allowed;
+  }
+  
+  /* Login Redirect Link */
+  .login-redirect {
+    margin-top: 15px;
+    font-size: 14px;
+  }
+  
+  .login-redirect a {
+    color: #2575fc;
+    text-decoration: none;
+    font-weight: bold;
+    transition: color 0.3s ease;
+  }
+  
+  .login-redirect a:hover {
+    color: #1b5fd6;
+  }
+  
+  /* Fade-in Animation */
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(-20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
   }
   
   /* Responsive Design */
   @media (max-width: 480px) {
     .register-box {
-      width: 95%;
-      padding: 2rem;
-    }
-  
-    .input-group {
-      flex-direction: column;
-      gap: 10px;
+      width: 90%;
+      padding: 25px;
     }
   }
   

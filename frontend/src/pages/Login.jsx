@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import "../styles/login.css";
 
 const Login = () => {
@@ -31,9 +31,9 @@ const Login = () => {
       console.log("Login Response:", result);
 
       if (response.ok) {
-        // Store the user details in localStorage properly
+        localStorage.setItem("token", result.token);
         localStorage.setItem("user", JSON.stringify(result.user));
-        navigate("/profile"); // Redirect to Profile page
+        navigate("/amount"); // Redirect to Amount page
       } else {
         setError(result.error || result.message || "Login failed.");
       }
@@ -50,11 +50,33 @@ const Login = () => {
       <div className="login-box">
         <h2>Login</h2>
         {error && <div className="error-msg">{error}</div>}
+        
         <form onSubmit={handleSubmit}>
-          <input type="email" name="email" placeholder="Email" value={loginData.email} onChange={handleChange} required />
-          <input type="password" name="password" placeholder="Password" value={loginData.password} onChange={handleChange} required />
-          <button type="submit" disabled={loading}>{loading ? "Logging in..." : "Login"}</button>
+          <input 
+            type="email" 
+            name="email" 
+            placeholder="Email" 
+            value={loginData.email} 
+            onChange={handleChange} 
+            required 
+          />
+          <input 
+            type="password" 
+            name="password" 
+            placeholder="Password" 
+            value={loginData.password} 
+            onChange={handleChange} 
+            required 
+          />
+          <button type="submit" disabled={loading}>
+            {loading ? "Logging in..." : "Login"}
+          </button>
         </form>
+
+        {/* Register Link */}
+        <p className="register-link">
+          Don't have an account? <Link to="/register">Register here</Link>
+        </p>
       </div>
     </div>
   );

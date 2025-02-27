@@ -29,23 +29,22 @@ const Register = () => {
       return;
     }
     setLoading(true);
-  
+
     try {
       const response = await fetch("http://localhost:8000/api/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
       });
-  
+
       const result = await response.json();
       console.log("Server Response:", result);
-  
+
       if (response.ok) {
-        // Store user data properly
         localStorage.setItem("user", JSON.stringify(result.user));
-        localStorage.setItem("token", result.token); // Store token for authentication
-  
-        navigate("/profile"); // Redirect to Profile Page
+        localStorage.setItem("token", result.token);
+
+        navigate("/profile"); // Redirect after successful registration
       } else {
         setError(result.error || result.message || "Registration failed.");
       }
@@ -56,7 +55,6 @@ const Register = () => {
       setLoading(false);
     }
   };
-  
 
   return (
     <div className="register-container">
@@ -79,6 +77,9 @@ const Register = () => {
           <input type="password" name="confirmPassword" placeholder="Confirm Password" value={formData.confirmPassword} onChange={handleChange} required />
           <button type="submit" disabled={loading}>{loading ? "Registering..." : "Register"}</button>
         </form>
+        <p className="login-redirect">
+          Already have an account? <span onClick={() => navigate("/login")}>Log in</span>
+        </p>
       </div>
     </div>
   );
