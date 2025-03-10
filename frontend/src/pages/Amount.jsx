@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom"; // Add this
+import { useNavigate } from "react-router-dom";
 import "../styles/amount.css";
 
 const Amount = () => {
@@ -11,11 +11,11 @@ const Amount = () => {
     const [entryType, setEntryType] = useState("income");
     const [editId, setEditId] = useState(null);
     const token = localStorage.getItem("token");
-    const navigate = useNavigate(); // Add this
+    const navigate = useNavigate();
 
     useEffect(() => {
         if (!token) {
-            navigate("/"); // Redirect to login if no token
+            navigate("/");
             return;
         }
         fetchData();
@@ -30,10 +30,9 @@ const Amount = () => {
             if (!response.ok) {
                 if (response.status === 401) {
                     localStorage.removeItem("token");
-                    navigate("/"); // Redirect to login if unauthorized
+                    navigate("/");
                 }
-                console.error("Error fetching data:", response.status);
-                return;
+                throw new Error("Error fetching data");
             }
 
             const data = await response.json();
@@ -55,29 +54,45 @@ const Amount = () => {
             return;
         }
 
-        const apiEndpoint = editId ? `/api/transaction/${editId}` : entryType === "income" ? "/api/income" : "/api/transaction";
+        const apiEndpoint = editId 
+            ? `/api/transaction/${editId}` 
+            : entryType === "income" 
+            ? "/api/income" 
+            : "/api/transaction";
         const method = editId ? "PUT" : "POST";
         const payload = { amount: Number(amount), category };
 
         try {
             const response = await fetch(`http://localhost:8000${apiEndpoint}`, {
                 method,
-                headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+                headers: { 
+                    "Content-Type": "application/json", 
+                    Authorization: `Bearer ${token}` 
+                },
                 body: JSON.stringify(payload),
             });
 
             if (!response.ok) {
-                console.error("Failed to add/update data");
-                return;
+                const errorData = await response.json();
+                throw new Error(errorData.error || "Failed to add/update data");
             }
 
             setAmount("");
             setCategory("");
             setEditId(null);
+            setEntryType("income");
             await fetchData();
         } catch (error) {
             console.error(`Error adding/updating ${entryType}:`, error);
+            alert(error.message);
         }
+    };
+
+    const handleEdit = (transaction) => {
+        setEditId(transaction.transaction_id); // Changed from transaction.id
+        setAmount(transaction.amount);
+        setCategory(transaction.category);
+        setEntryType("transaction");
     };
 
     const handleDelete = async (id) => {
@@ -86,10 +101,16 @@ const Amount = () => {
                 method: "DELETE",
                 headers: { Authorization: `Bearer ${token}` },
             });
-            if (!response.ok) throw new Error("Failed to delete");
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.details || errorData.error || "Failed to delete transaction");
+            }
+
             await fetchData();
         } catch (error) {
             console.error("Error deleting transaction:", error);
+            alert(`Delete failed: ${error.message}`);
         }
     };
 
@@ -101,14 +122,40 @@ const Amount = () => {
             </div>
 
             <div className="entry-container">
-                <h3>{editId ? "Edit Entry" : "Add New Entry"}</h3>
-                <select value={entryType} onChange={(e) => setEntryType(e.target.value)}>
+                <h3>{editId ? "Edit Transaction" : "Add New Entry"}</h3>
+                <select 
+                    value={entryType} 
+                    onChange={(e) => setEntryType(e.target.value)}
+                    disabled={editId}
+                >
                     <option value="income">Salary (Income)</option>
                     <option value="transaction">Expense (Transaction)</option>
                 </select>
-                <input type="number" value={amount} onChange={(e) => setAmount(e.target.value)} placeholder="Enter Amount" />
-                <input type="text" value={category} onChange={(e) => setCategory(e.target.value)} placeholder={entryType === "income" ? "Income Source" : "Expense Category"} />
-                <button onClick={handleSubmit}>{editId ? "Update" : entryType === "income" ? "Add Income" : "Add Expense"}</button>
+                <input 
+                    type="number" 
+                    value={amount} 
+                    onChange={(e) => setAmount(e.target.value)} 
+                    placeholder="Enter Amount" 
+                />
+                <input 
+                    type="text" 
+                    value={category} 
+                    onChange={(e) => setCategory(e.target.value)} 
+                    placeholder={entryType === "income" ? "Income Source" : "Expense Category"} 
+                />
+                <button onClick={handleSubmit}>
+                    {editId ? "Update Transaction" : entryType === "income" ? "Add Income" : "Add Expense"}
+                </button>
+                {editId && (
+                    <button onClick={() => {
+                        setEditId(null);
+                        setAmount("");
+                        setCategory("");
+                        setEntryType("income");
+                    }}>
+                        Cancel Edit
+                    </button>
+                )}
             </div>
 
             <div className="data-container">
@@ -123,12 +170,12 @@ const Amount = () => {
                     </thead>
                     <tbody>
                         {transactions.map((transaction) => (
-                            <tr key={transaction.id}>
+                            <tr key={transaction.transaction_id}> {/* Changed from transaction.id */}
                                 <td>${Number(transaction.amount || 0).toFixed(2)}</td>
                                 <td>{transaction.category}</td>
                                 <td>
-                                    <button onClick={() => { setEditId(transaction.id); setAmount(transaction.amount); setCategory(transaction.category); setEntryType("transaction"); }}>Edit</button>
-                                    <button onClick={() => handleDelete(transaction.id)}>Delete</button>
+                                    <button onClick={() => handleEdit(transaction)}>Edit</button>
+                                    <button onClick={() => handleDelete(transaction.transaction_id)}>Delete</button> {/* Changed from transaction.id */}
                                 </td>
                             </tr>
                         ))}

@@ -144,24 +144,85 @@ app.post("/api/transaction", verifyToken, (req, res) => {
     });
 });
 
-// ✅ Fetch User Data (Income, Transactions, Balance)
+app.put("/api/transaction/:id", verifyToken, (req, res) => {
+    const { amount, category } = req.body;
+    const transactionId = req.params.id;
+
+    if (!amount || !category) {
+        return res.status(400).json({ error: "Amount and category are required!" });
+    }
+
+    db.query(
+        "SELECT * FROM transaction WHERE transaction_id = ? AND user_id = ?",
+        [transactionId, req.userId],
+        (err, results) => {
+            if (err) return res.status(500).json({ error: "Database error" });
+            if (results.length === 0) return res.status(404).json({ error: "Transaction not found" });
+
+            db.query(
+                "UPDATE transaction SET amount = ?, category = ? WHERE transaction_id = ?",
+                [amount, category, transactionId],
+                (err) => {
+                    if (err) return res.status(500).json({ error: "Database error" });
+                    res.json({ message: "Transaction updated successfully!" });
+                }
+            );
+        }
+    );
+});
+
+app.delete("/api/transaction/:id", verifyToken, (req, res) => {
+    const transactionId = req.params.id;
+
+    db.query(
+        "SELECT * FROM transaction WHERE transaction_id = ? AND user_id = ?",
+        [transactionId, req.userId],
+        (err, results) => {
+            if (err) {
+                console.error("Database SELECT Error:", err);
+                return res.status(500).json({ error: "Database error", details: err.message });
+            }
+            if (results.length === 0) {
+                return res.status(404).json({ error: "Transaction not found or not authorized" });
+            }
+
+            db.query(
+                "DELETE FROM transaction WHERE transaction_id = ?",
+                [transactionId],
+                (err) => {
+                    if (err) {
+                        console.error("Database DELETE Error:", err);
+                        return res.status(500).json({ error: "Database error", details: err.message });
+                    }
+                    res.json({ message: "Transaction deleted successfully!" });
+                }
+            );
+        }
+    );
+});
+
+
 app.get("/api/data", verifyToken, (req, res) => {
     db.query("SELECT SUM(amount) AS income FROM income WHERE user_id = ?", [req.userId], (err, incomeResult) => {
         if (err) return res.status(500).json({ error: "Database error" });
 
-        db.query("SELECT amount, category FROM transaction WHERE user_id = ?", [req.userId], (err, transactionResults) => {
-            if (err) return res.status(500).json({ error: "Database error" });
+        db.query(
+            "SELECT transaction_id, amount, category FROM transaction WHERE user_id = ?",
+            [req.userId],
+            (err, transactionResults) => {
+                if (err) return res.status(500).json({ error: "Database error" });
 
-            const totalIncome = incomeResult[0].income || 0;
-            const totalExpenses = transactionResults.reduce((total, item) => total + Number(item.amount || 0), 0);
-            const balance = totalIncome - totalExpenses;
+                const totalIncome = incomeResult[0].income || 0;
+                const totalExpenses = transactionResults.reduce((total, item) => total + Number(item.amount || 0), 0);
+                const balance = totalIncome - totalExpenses;
 
-            res.json({
-                income: totalIncome,
-                transactions: transactionResults,
-                balance,
-            });
-        });
+                res.json({
+                    income: totalIncome,
+                    transactions: transactionResults,
+                    balance,
+                });
+            }
+        );
     });
 });
 
