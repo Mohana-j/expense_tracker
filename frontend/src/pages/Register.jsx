@@ -44,7 +44,7 @@ const Register = () => {
         localStorage.setItem("user", JSON.stringify(result.user));
         localStorage.setItem("token", result.token);
 
-        navigate("/profile"); // Redirect after successful registration
+        navigate("/amount"); // Redirect after successful registration
       } else {
         setError(result.error || result.message || "Registration failed.");
       }
